@@ -8,10 +8,10 @@ O **IBGE Nomes Analytics** consome a API oficial do Censo Demográfico do IBGE, 
 
 ##  O que o app faz?
 
-* **  Análise de Tendência:** Tabela detalhada década a década com indicadores visuais de subida ou descida de popularidade.
-* **  Modo Comparativo:** Gráficos de barras diretamente no terminal para comparar a força de dois nomes, calculando a diferença real e percentual entre eles.
-* **  Cálculo de Prevalência:** Descubra a raridade do nome (ex: *A cada 5.000 brasileiros, 1 se chama Victor*).
-* **  Inteligência Offline:** Armazenamento automático em banco de dados local para criar rankings personalizados de décadas e buscas por faixas de frequência.
+* Análise de Tendência: Tabela detalhada década a década com indicadores visuais de subida ou descida de popularidade.
+* Modo Comparativo: Gráficos de barras diretamente no terminal para comparar a força de dois nomes, calculando a diferença real e percentual entre eles.
+* Cálculo de Prevalência: Descubra a raridade do nome (ex: *A cada 5.000 brasileiros, 1 se chama Victor*).
+* Inteligência Offline: Armazenamento automático em banco de dados local para criar rankings personalizados de décadas e buscas por faixas de frequência.
 
 ---
 
@@ -24,15 +24,3 @@ O ecossistema do projeto utiliza as seguintes bibliotecas:
 * **[Requests](https://requests.readthedocs.io/):** Comunicação com a API do IBGE.
 * **[Humanize](https://python-humanize.readthedocs.io/):** Formatação de números grandes para leitura simplificada.
 * **[SQLite3](https://docs.python.org/3/library/sqlite3.html):** Banco de dados relacional embutido.
-
----
-
-##  Como  Rodar
-
-Siga os passos abaixo no terminal para clonar o projeto, configurar o ambiente virtual (`venv`) e instalar as dependências necessárias:
-pip install requests rich humanize
-### 1. Clonar o Repositório
-```bash
-git clone [https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git](https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git)
-cd SEU-REPOSITORIO
-
