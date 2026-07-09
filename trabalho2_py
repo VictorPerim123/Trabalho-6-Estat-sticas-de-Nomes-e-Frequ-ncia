@@ -46,6 +46,13 @@ class BancoDeDados:
         ''', (nome, decada, bruta, humanizada))
         self.conn.commit()
 
+    def salvar_resumo(self, nome, total, pico, prevalencia):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            INSERT OR REPLACE INTO resumo (nome, total, decada_pico, prevalencia)
+            VALUES (?, ?, ?, ?)
+        ''', (nome, total, pico, prevalencia))
+        self.conn.commit()
 
     def buscar_frequencias_decada(self, decada):
         cursor = self.conn.cursor()
@@ -58,6 +65,16 @@ class BancoDeDados:
         ''', (decada,))
         return cursor.fetchall()
         
+    def buscar_nomes_por_faixa(self, min_freq, max_freq):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT nome, SUM(frequencia_bruta) as total 
+            FROM frequencia 
+            GROUP BY nome 
+            HAVING total BETWEEN ? AND ?
+            ORDER BY total DESC
+        ''', (min_freq, max_freq))
+        return cursor.fetchall()
 
 class IBGENomesApp:
     def __init__(self):
@@ -168,6 +185,42 @@ class IBGENomesApp:
             tabela.add_row(str(i), nome, humanizada)
 
         console.print(tabela)
+
+    def op_resumo_nome(self):
+        nome = Prompt.ask("[bold cyan]Digite o nome para o resumo[/bold cyan]").strip().upper()
+        dados = self.buscar_dados_api(nome)
+
+        if not dados:
+            console.print("[red]Nome não encontrado.[/red]")
+            return
+
+        total = sum([item['frequencia'] for item in dados])
+        pico = max(dados, key=lambda x: x['frequencia'])
+        decada_pico = self._limpar_periodo(pico['periodo'])
+        
+        fator = POPULACAO_BRASIL // total if total > 0 else 0
+        prevalencia = f"A cada {humanize.intcomma(fator)} brasileiros, 1 se chama {nome.title()}"
+
+        print(prevalencia)
+
+        self.db.salvar_resumo(nome, total, decada_pico, prevalencia)
+
+    def op_nomes_por_faixa(self):
+        min_freq = IntPrompt.ask("[bold cyan]Frequência mínima[/bold cyan]")
+        max_freq = IntPrompt.ask("[bold cyan]Frequência máxima[/bold cyan]")
+
+        limite_min_h = self._humanizar_numero(min_freq)
+        limite_max_h = self._humanizar_numero(max_freq)
+
+        resultados = self.db.buscar_nomes_por_faixa(min_freq, max_freq)
+
+        if not resultados:
+            console.print(f"[yellow]Nenhum nome encontrado na faixa entre {limite_min_h} e {limite_max_h}.[/yellow]")
+            return
+
+        console.print(f"\n[bold]Nomes na faixa (Entre {limite_min_h} e {limite_max_h}):[/bold]")
+        for nome, total in resultados:
+            console.print(f"{nome}: [green]{self._humanizar_numero(total)}[/green] no total")
 
     def executar(self):
         while True:
